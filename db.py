@@ -5,7 +5,15 @@ sql = base.cursor()
 
 
 def add_user(user):
-    pass
+    sql.execute(f'INSERT INTO expenses (owner, participant, income) VALUES(?, ?, ?)', (user, "test", "150"))
+    base.commit()
+    
+# create table tbl1(id int primary key, dt datetime default current_timestamp);
+# sql.execute(f"INSERT INTO users VALUES (?, ?, ?)", (user_login, user_password, 0))
+# cur.execute('INSERT INTO data VALUES(?, ?)', ('jonny123', '12345468'))
+
+
+
 
 def insert():
     pass

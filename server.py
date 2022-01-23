@@ -35,7 +35,8 @@ def telegram_bot(token):
 # Добавляет нового участника мероприятия
     @bot.message_handler(commands=['add_user'])
     def add_user(message):
-        partypart.add_user(message)
+        partypart.add_user(message.chat.id)
+
 
 
     bot.polling()
