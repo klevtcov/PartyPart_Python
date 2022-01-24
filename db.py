@@ -4,8 +4,8 @@ base = sqlite3.connect("patrypart.db", check_same_thread=False)
 sql = base.cursor()
 
 
-def add_user(user):
-    sql.execute(f'INSERT INTO expenses (owner, participant, income) VALUES(?, ?, ?)', (user, "test", "150"))
+def add_expense(user):
+    sql.execute(f'INSERT INTO expenses (owner, user, expense) VALUES(?, ?, ?)', (user, "test", "150"))
     base.commit()
     
 # create table tbl1(id int primary key, dt datetime default current_timestamp);
@@ -36,8 +36,8 @@ def check_db_exists():
     sql.execute("""CREATE TABLE IF NOT EXISTS expenses (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             owner TEXT,
-            participant TEXT,
-            income INTEGER)""")
+            user TEXT,
+            expense INTEGER)""")
     base.commit()
 
 check_db_exists()
