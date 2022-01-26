@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import re
 from typing import List, NamedTuple, Optional
 
@@ -25,34 +25,11 @@ def init():
 
 def add_expense(raw_message: str, owner) -> Expense:
     parsed_message = _parse_message(raw_message)
-    # user = parsed_message.user_name
     sql = db.get_cursor()
-    sql.execute(f'INSERT INTO expenses (owner, user, expense) VALUES(?, ?, ?)', (owner, parsed_message.user_name, parsed_message.amount))
+    sql.execute(f'INSERT INTO expenses (owner, user, expense, date) VALUES(?, ?, ?, ?)', (owner, parsed_message.user_name, parsed_message.amount, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
     db.base.commit()
-    print(owner + " " + parsed_message.user_name + " " + parsed_message.amount + " added.")        
+    # print(str(owner) + " " + parsed_message.user_name + " " + parsed_message.amount + " added.")        
     return Expense(id=None, amount=parsed_message.amount, user_name=parsed_message.user_name)
-
-# def add_user(user):
-#     sql.execute(f'INSERT INTO expenses (owner, participant, income) VALUES(?, ?, ?)', (user, "test", "150"))
-#     base.commit()
-    
-
-
-# def add_expense(raw_message: str) -> Expense:
-#     """Добавляет новое сообщение.
-#     Принимает на вход текст сообщения, пришедшего в бот."""
-#     parsed_message = _parse_message(raw_message)
-#     category = Categories().get_category(
-#         parsed_message.category_text)
-#     inserted_row_id = db.insert("expense", {
-#         "amount": parsed_message.amount,
-#         "created": _get_now_formatted(),
-#         "category_codename": category.codename,
-#         "raw_text": raw_message
-#     })
-#     return Expense(id=None,
-#                    amount=parsed_message.amount,
-#                    category_name=category.name)
 
 
 def _parse_message(raw_message: str) -> Expense:
@@ -68,18 +45,12 @@ def _parse_message(raw_message: str) -> Expense:
     user_name = regexp_result.group(2).strip()
     return Message(amount=amount, user_name=user_name)
 
-
-add_expense("1500 Сергей", "3216576")
-
 def user():
     pass
 
 
 def amount():
     pass
-
-
-
 
 
 
@@ -90,8 +61,8 @@ def _get_now_formatted() -> str:
     return _get_now_datetime().strftime("%Y-%m-%d %H:%M:%S")
 
 
-def _get_now_datetime() -> datetime.datetime:
+def _get_now_datetime() -> datetime:
     """Возвращает сегодняшний datetime с учётом времненной зоны Мск."""
     tz = pytz.timezone("Europe/Moscow")
-    now = datetime.datetime.now(tz)
+    now = datetime.now(tz)
     return now

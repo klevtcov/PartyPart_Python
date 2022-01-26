@@ -37,7 +37,8 @@ def check_db_exists():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             owner TEXT,
             user TEXT,
-            expense INTEGER)""")
+            expense INTEGER,
+            Date timestamp)""")
     base.commit()
 
 check_db_exists()
