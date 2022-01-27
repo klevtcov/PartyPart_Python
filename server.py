@@ -16,7 +16,7 @@ def telegram_bot(token):
                                         #   "Посмотреть траты участника – Имя юзера\n"
                                         #   "Удалить запись о расходах /del\n"
                                           " Для добавления трат внесите данные в формате – Сумма Имя.\nНапример – 500 Сергей)\n"
-                                        #   "Посмотреть итоги /total\n"
+                                          "Посмотреть итоги /total\n"
                                           "Вызвать справку /help или /start\n"
                                           "Удалить все записи о мероприятии /restart")
 
@@ -32,6 +32,13 @@ def telegram_bot(token):
                                           "– Вероника выбрала пиццу за 560\n"
                                           "– Сергей опаздывал на мероприятие и не успел купить ничего\n"
                                           "Вы вносите все эти траты в бота и он рассчитывает кому надо докинуть денег, а кому забрать из общего банка.")
+
+# Выыод статистики
+    @bot.message_handler(commands=['total'])
+    def total_message(message):
+        answer_message = partypart.total(message.chat.id)
+        print(answer_message)
+        bot.send_message(message.chat.id, answer_message)
 
 
     @bot.message_handler()

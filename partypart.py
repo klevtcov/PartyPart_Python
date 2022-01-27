@@ -31,6 +31,24 @@ def add_expense(raw_message: str, owner) -> Expense:
     # print(str(owner) + " " + parsed_message.user_name + " " + parsed_message.amount + " added.")        
     return Expense(id=None, amount=parsed_message.amount, user_name=parsed_message.user_name)
 
+def total(owner):
+    sql = db.get_cursor()
+    answer = sql.execute(f'SELECT user, sum(expense) FROM expenses WHERE owner = (?) GROUP BY user', (str(owner),))
+    print(answer)
+    return answer
+
+# SELECT user, sum(expense) FROM expenses WHERE owner = 197902523 GROUP BY user
+
+# SELECT author, SUM(price * amount) AS Стоимость
+# FROM book -- Вывести суммарную стоимость книг каждого автора.
+# GROUP BY author;
+
+    # cursor.execute(f"select sum(amount) "
+    #                f"from expense where date(created) >= '{first_day_of_month}' "
+    #                f"and category_codename in (select codename "
+    #                f"from category where is_base_expense=true)")
+
+
 
 def _parse_message(raw_message: str) -> Expense:
     """Парсит текст пришедшего сообщения о новом расходе."""
