@@ -36,19 +36,32 @@ def telegram_bot(token):
 # Выыод статистики
     @bot.message_handler(commands=['total'])
     def total_message(message):
-        answer_message = partypart.total(message.chat.id)
-        print(answer_message)
+        total_expenses = partypart.total(message.chat.id)
+        total_expenses_rows = [
+            f"{expense.user_name} – {expense.amount}\n"
+            for expense in total_expenses
+        ]
+        answer_message = "Вклад в общие расходы:\n\n" + "".join(total_expenses_rows)
         bot.send_message(message.chat.id, answer_message)
+
+
+    # last_expenses_rows = [
+    #     f"{expense.amount} руб. на {expense.category_name} — нажми "
+    #     f"/del{expense.id} для удаления"
+    #     for expense in last_expenses]
+    # answer_message = "Последние сохранённые траты:\n\n* " + "\n\n* "\
+    #         .join(last_expenses_rows)
+    # await message.answer(answer_message)
+
 
 
     @bot.message_handler()
     def add_expense(message):
-        # try:
-        expense = partypart.add_expense(message.text, message.chat.id)
-        # except exceptions.NotCorrectMessage(message.text, message.chat.id) as e:
-        #     print(e, 'server.py')
-        #     bot.send_message(message.chat.id, str(e))
-        #     return
+        try:
+            expense = partypart.add_expense(message.text, message.chat.id)
+        except Exception as e:
+            bot.send_message(message.chat.id, e)
+            return
         answer_message = (
             f"Добавлены траты от {expense.user_name} на сумму {expense.amount}.\n\n"
             f"Посмотреть текущие итоги – /total")    

@@ -38,6 +38,7 @@ def check_db_exists():
             owner TEXT,
             user TEXT,
             expense INTEGER,
+            comment TEXT,
             Date timestamp)""")
     base.commit()
 

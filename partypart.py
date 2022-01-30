@@ -33,9 +33,36 @@ def add_expense(raw_message: str, owner) -> Expense:
 
 def total(owner):
     sql = db.get_cursor()
-    answer = sql.execute(f'SELECT user, sum(expense) FROM expenses WHERE owner = (?) GROUP BY user', (str(owner),))
-    print(answer)
-    return answer
+    answer = sql.execute(f'SELECT id, user, sum(expense) FROM expenses WHERE owner = (?) GROUP BY user', (str(owner),))
+    rows = answer.fetchall()
+    total_expenses = [Expense(id=row[0], user_name=row[1], amount=row[2]) for row in rows]
+    print(total_expenses)
+    return total_expenses
+
+
+    # rows = cursor.fetchall()
+    # last_expenses = [Expense(id=row[0], amount=row[1], category_name=row[2]) for row in rows]
+
+# def get_today_statistics() -> str:
+#     """Возвращает строкой статистику расходов за сегодня"""
+#     cursor = db.get_cursor()
+#     cursor.execute("select sum(amount)"
+#                    "from expense where date(created)=date('now', 'localtime')")
+#     result = cursor.fetchone()
+#     if not result[0]:
+#         return "Сегодня ещё нет расходов"
+#     all_today_expenses = result[0]
+#     cursor.execute("select sum(amount) "
+#                    "from expense where date(created)=date('now', 'localtime') "
+#                    "and category_codename in (select codename "
+#                    "from category where is_base_expense=true)")
+#     result = cursor.fetchone()
+#     base_today_expenses = result[0] if result[0] else 0
+#     return (f"Расходы сегодня:\n"
+#             f"всего — {all_today_expenses} руб.\n"
+#             f"базовые — {base_today_expenses} руб. из {_get_budget_limit()} руб.\n\n"
+#             f"За текущий месяц: /month")
+
 
 # SELECT user, sum(expense) FROM expenses WHERE owner = 197902523 GROUP BY user
 
@@ -57,7 +84,7 @@ def _parse_message(raw_message: str) -> Expense:
             or not regexp_result.group(1) or not regexp_result.group(2):
         raise exceptions.NotCorrectMessage(
             "Не могу понять сообщение. Напишите сообщение в формате, "
-            "например:\n700 Сергей")
+            "например:\n800 Сергей")
 
     amount = regexp_result.group(1).replace(" ", "")
     user_name = regexp_result.group(2).strip()
