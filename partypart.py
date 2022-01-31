@@ -36,7 +36,6 @@ def total(owner):
     answer = sql.execute(f'SELECT id, user, sum(expense) FROM expenses WHERE owner = (?) GROUP BY user', (str(owner),))
     rows = answer.fetchall()
     total_expenses = [Expense(id=row[0], user_name=row[1], amount=row[2]) for row in rows]
-    print(total_expenses)
     return total_expenses
 
 
