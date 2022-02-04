@@ -31,6 +31,14 @@ def add_expense(raw_message: str, owner) -> Expense:
     # print(str(owner) + " " + parsed_message.user_name + " " + parsed_message.amount + " added.")        
     return Expense(id=None, amount=parsed_message.amount, user_name=parsed_message.user_name)
 
+def show_all(owner):
+    sql = db.get_cursor()
+    answer = sql.execute(f'SELECT id, user, expense, date FROM expenses WHERE owner = (?) ORDER BY date', (str(owner),))
+    rows = answer.fetchall()
+    all_expenses = [Expense(id=row[0], user_name=row[1], amount=row[2]) for row in rows]
+    return all_expenses
+
+
 def total(owner):
     sql = db.get_cursor()
     answer = sql.execute(f'SELECT id, user, sum(expense) FROM expenses WHERE owner = (?) GROUP BY user', (str(owner),))
@@ -47,9 +55,13 @@ def clear_all(owner):
         return ('Нет доступных полей для удаления')
 
 
-# def delete_expense(row_id: int) -> None:
-#     """Удаляет сообщение по его идентификатору"""
-#     db.delete("expense", row_id)
+def delete_expense(row_id: int) -> None:
+    """Удаляет сообщение по его идентификатору"""
+    sql = db.get_cursor()
+    check_owner = sql.execute(f'SELECT id, user FROM expenses WHERE id=(?)', (row_id,))
+    print (check_owner)
+    # db.delete(row_id)
+
 
 
     # rows = cursor.fetchall()

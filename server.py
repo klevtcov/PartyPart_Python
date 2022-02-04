@@ -33,6 +33,40 @@ def telegram_bot(token):
                                           "– Сергей опаздывал на мероприятие и не успел купить ничего\n"
                                           "Вы вносите все эти траты в бота и он рассчитывает кому надо докинуть денег, а кому забрать из общего банка.")
 
+# Удаление конкретной записи из списка
+    @bot.message_handler(lambda message.text.startswith('/del'))
+    def del_expense(message):
+        """Удаляет одну запись о расходе по её идентификатору"""
+        row_id = int(message.text[4:])
+        partypart.delete_expense(row_id)
+        answer_message = "Удалил"
+        bot.send_message(message.chat.id, answer_message)
+
+
+
+# Вывод списка всех трат
+    @bot.message_handler(commands=['show_all'])
+    def show_all(message):
+        all_expenses = partypart.show_all(message.chat.id)
+        all_expenses_rows = [
+            f"{expense.user_name} – {expense.amount}. Для удаления нажми /del{expense.id}\n"
+            for expense in all_expenses
+        ]
+        answer_message = "Список расходов:\n\n" + "".join(all_expenses_rows)
+        bot.send_message(message.chat.id, answer_message)
+
+# Для удаления нажми /del{expense.id}
+
+
+    # last_expenses_rows = [
+    #     f"{expense.amount} руб. на {expense.category_name} — нажми "
+    #     f"/del{expense.id} для удаления"
+    #     for expense in last_expenses]
+    # answer_message = "Последние сохранённые траты:\n\n* " + "\n\n* "\
+    #         .join(last_expenses_rows)
+    # await message.answer(answer_message)
+
+
 # Вывод статистики
     @bot.message_handler(commands=['total'])
     def total_message(message):
@@ -59,6 +93,19 @@ def telegram_bot(token):
     #         .join(last_expenses_rows)
     # await message.answer(answer_message)
 
+# # Добавление трат – парсинг сообщения и сохранение данных в таблицу
+#     @bot.message_handler()
+#     def add_expense(message):
+#         try:
+#             expense = partypart.add_expense(message.text, message.chat.id)
+#         except Exception as e:
+#             bot.send_message(message.chat.id, e)
+#             return
+#         answer_message = (
+#             f"Добавлены траты от {expense.user_name} на сумму {expense.amount}.\n\n"
+#             f"Посмотреть текущие итоги – /total")    
+#         bot.send_message(message.chat.id, answer_message)
+
 
 # Добавление трат – парсинг сообщения и сохранение данных в таблицу
     @bot.message_handler()
@@ -78,5 +125,4 @@ def telegram_bot(token):
 
 
 if __name__ == '__main__':
-    # get_data()
     telegram_bot(token)
