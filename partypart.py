@@ -38,6 +38,19 @@ def total(owner):
     total_expenses = [Expense(id=row[0], user_name=row[1], amount=row[2]) for row in rows]
     return total_expenses
 
+def clear_all(owner):
+    try:
+        db.restart(owner)
+        return ('Бот перезапущен, все данные удалены')
+    except Exception as e:
+        print(e)
+        return ('Нет доступных полей для удаления')
+
+
+# def delete_expense(row_id: int) -> None:
+#     """Удаляет сообщение по его идентификатору"""
+#     db.delete("expense", row_id)
+
 
     # rows = cursor.fetchall()
     # last_expenses = [Expense(id=row[0], amount=row[1], category_name=row[2]) for row in rows]

@@ -15,7 +15,7 @@ def telegram_bot(token):
                                           "Получить подробную справку о работе бота /info\n"
                                         #   "Посмотреть траты участника – Имя юзера\n"
                                         #   "Удалить запись о расходах /del\n"
-                                          " Для добавления трат внесите данные в формате – Сумма Имя.\nНапример – 500 Сергей)\n"
+                                          "Для добавления трат внесите данные в формате – Сумма Имя.\nНапример – 500 Сергей)\n"
                                           "Посмотреть итоги /total\n"
                                           "Вызвать справку /help или /start\n"
                                           "Удалить все записи о мероприятии /restart")
@@ -33,7 +33,7 @@ def telegram_bot(token):
                                           "– Сергей опаздывал на мероприятие и не успел купить ничего\n"
                                           "Вы вносите все эти траты в бота и он рассчитывает кому надо докинуть денег, а кому забрать из общего банка.")
 
-# Выыод статистики
+# Вывод статистики
     @bot.message_handler(commands=['total'])
     def total_message(message):
         total_expenses = partypart.total(message.chat.id)
@@ -42,6 +42,12 @@ def telegram_bot(token):
             for expense in total_expenses
         ]
         answer_message = "Вклад в общие расходы:\n\n" + "".join(total_expenses_rows)
+        bot.send_message(message.chat.id, answer_message)
+
+# Перезапуск мероприятия / удаление всех записей
+    @bot.message_handler(commands=['restart', 'clear_all'])
+    def restart(message):
+        answer_message = partypart.clear_all(message.chat.id)
         bot.send_message(message.chat.id, answer_message)
 
 
@@ -54,7 +60,7 @@ def telegram_bot(token):
     # await message.answer(answer_message)
 
 
-
+# Добавление трат – парсинг сообщения и сохранение данных в таблицу
     @bot.message_handler()
     def add_expense(message):
         try:

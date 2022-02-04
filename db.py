@@ -24,8 +24,10 @@ def show_all():
 def delete_session():
     pass
 
-def delete_record():
-    pass
+def restart(owner):
+    sql.execute(f"delete from expenses where owner=(?)", (owner,))
+    base.commit()
+
 
 def get_cursor():
     return sql
