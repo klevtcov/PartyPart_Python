@@ -12,12 +12,12 @@ def telegram_bot(token):
     @bot.message_handler(commands=['start', 'help'])
     def start_message(message):
         bot.send_message(message.chat.id, "Добро пожаловать в PartyPart\n\n"
+                                          "Вызвать эту справку /help или /start\n"
                                           "Получить подробную справку о работе бота /info\n"
-                                        #   "Посмотреть траты участника – Имя юзера\n"
-                                        #   "Удалить запись о расходах /del\n"
                                           "Для добавления трат внесите данные в формате – Сумма Имя.\nНапример – 500 Сергей)\n"
+                                          "Удалить запись о расходах /del + номер записи\n"
+                                          "Посмотреть список всех трат /show_all\n"
                                           "Посмотреть итоги /total\n"
-                                          "Вызвать справку /help или /start\n"
                                           "Удалить все записи о мероприятии /restart")
 
 
@@ -33,16 +33,6 @@ def telegram_bot(token):
                                           "– Сергей опаздывал на мероприятие и не успел купить ничего\n"
                                           "Вы вносите все эти траты в бота и он рассчитывает кому надо докинуть денег, а кому забрать из общего банка.")
 
-# Удаление конкретной записи из списка
-    @bot.message_handler(lambda message.text.startswith('/del'))
-    def del_expense(message):
-        """Удаляет одну запись о расходе по её идентификатору"""
-        row_id = int(message.text[4:])
-        partypart.delete_expense(row_id)
-        answer_message = "Удалил"
-        bot.send_message(message.chat.id, answer_message)
-
-
 
 # Вывод списка всех трат
     @bot.message_handler(commands=['show_all'])
@@ -54,17 +44,6 @@ def telegram_bot(token):
         ]
         answer_message = "Список расходов:\n\n" + "".join(all_expenses_rows)
         bot.send_message(message.chat.id, answer_message)
-
-# Для удаления нажми /del{expense.id}
-
-
-    # last_expenses_rows = [
-    #     f"{expense.amount} руб. на {expense.category_name} — нажми "
-    #     f"/del{expense.id} для удаления"
-    #     for expense in last_expenses]
-    # answer_message = "Последние сохранённые траты:\n\n* " + "\n\n* "\
-    #         .join(last_expenses_rows)
-    # await message.answer(answer_message)
 
 
 # Вывод статистики
@@ -78,6 +57,7 @@ def telegram_bot(token):
         answer_message = "Вклад в общие расходы:\n\n" + "".join(total_expenses_rows)
         bot.send_message(message.chat.id, answer_message)
 
+
 # Перезапуск мероприятия / удаление всех записей
     @bot.message_handler(commands=['restart', 'clear_all'])
     def restart(message):
@@ -85,40 +65,28 @@ def telegram_bot(token):
         bot.send_message(message.chat.id, answer_message)
 
 
-    # last_expenses_rows = [
-    #     f"{expense.amount} руб. на {expense.category_name} — нажми "
-    #     f"/del{expense.id} для удаления"
-    #     for expense in last_expenses]
-    # answer_message = "Последние сохранённые траты:\n\n* " + "\n\n* "\
-    #         .join(last_expenses_rows)
-    # await message.answer(answer_message)
-
-# # Добавление трат – парсинг сообщения и сохранение данных в таблицу
-#     @bot.message_handler()
-#     def add_expense(message):
-#         try:
-#             expense = partypart.add_expense(message.text, message.chat.id)
-#         except Exception as e:
-#             bot.send_message(message.chat.id, e)
-#             return
-#         answer_message = (
-#             f"Добавлены траты от {expense.user_name} на сумму {expense.amount}.\n\n"
-#             f"Посмотреть текущие итоги – /total")    
-#         bot.send_message(message.chat.id, answer_message)
-
-
-# Добавление трат – парсинг сообщения и сохранение данных в таблицу
+# Добавление и удаление трат – удаление записей по id, парсинг сообщения и сохранение данных в таблицу
     @bot.message_handler()
     def add_expense(message):
-        try:
-            expense = partypart.add_expense(message.text, message.chat.id)
-        except Exception as e:
-            bot.send_message(message.chat.id, e)
-            return
-        answer_message = (
-            f"Добавлены траты от {expense.user_name} на сумму {expense.amount}.\n\n"
-            f"Посмотреть текущие итоги – /total")    
-        bot.send_message(message.chat.id, answer_message)
+        if (message.text.startswith('/del')):
+            '''Удаляем запись по её номеру в базе данных'''
+            try:
+                row_id = int(message.text[4:])
+                answer_message = partypart.delete_expense(message.chat.id, row_id)
+                bot.send_message(message.chat.id, answer_message)
+            except Exception as e:
+                bot.send_message(message.chat.id, 'Введите команду в формате /delX, где Х - номер записи о затратах')
+                return
+        else:
+            try:
+                expense = partypart.add_expense(message.text, message.chat.id)
+            except Exception as e:
+                bot.send_message(message.chat.id, e)
+                return
+            answer_message = (
+                f"Добавлены траты от {expense.user_name} на сумму {expense.amount}.\n\n"
+                f"Посмотреть текущие итоги – /total")    
+            bot.send_message(message.chat.id, answer_message)
 
 
     bot.polling()
