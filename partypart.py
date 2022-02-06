@@ -17,6 +17,7 @@ class Expense(NamedTuple):
     id: Optional[int]
     amount: int
     user_name: str
+    debt: Optional[int]
 
 
 
@@ -24,24 +25,23 @@ def add_expense(raw_message: str, owner) -> Expense:
     parsed_message = _parse_message(raw_message)
     sql = db.get_cursor()
     sql.execute(f'INSERT INTO expenses (owner, user, expense, date) VALUES(?, ?, ?, ?)', (owner, parsed_message.user_name, parsed_message.amount, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
-    db.base.commit()
-    # print(str(owner) + " " + parsed_message.user_name + " " + parsed_message.amount + " added.")        
-    return Expense(id=None, amount=parsed_message.amount, user_name=parsed_message.user_name)
+    db.base.commit()    
+    return Expense(id=None, amount=parsed_message.amount, user_name=parsed_message.user_name, debt=None)
 
 
 def show_all(owner):
     sql = db.get_cursor()
     answer = sql.execute(f'SELECT id, user, expense, date FROM expenses WHERE owner = (?) ORDER BY date', (str(owner),))
     rows = answer.fetchall()
-    all_expenses = [Expense(id=row[0], user_name=row[1], amount=row[2]) for row in rows]
+    all_expenses = [Expense(id=row[0], user_name=row[1], amount=row[2], debt=None) for row in rows]
     return all_expenses
 
 
 def total(owner):
     sql = db.get_cursor()
-    answer = sql.execute(f'SELECT id, user, sum(expense) FROM expenses WHERE owner = (?) GROUP BY user', (str(owner),))
+    answer = sql.execute(f'SELECT id, user, sum(expense), ((SELECT sum(expense) FROM expenses WHERE owner = (?)) / (SELECT count(DISTINCT user) FROM expenses WHERE owner = (?))) FROM expenses WHERE owner = (?) GROUP BY user', (str(owner), str(owner), str(owner),))
     rows = answer.fetchall()
-    total_expenses = [Expense(id=row[0], user_name=row[1], amount=row[2]) for row in rows]
+    total_expenses = [Expense(id=row[0], user_name=row[1], amount=row[2], debt=row[3]-row[2]) for row in rows]
     return total_expenses
 
 

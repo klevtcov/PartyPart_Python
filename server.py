@@ -51,7 +51,7 @@ def telegram_bot(token):
     def total_message(message):
         total_expenses = partypart.total(message.chat.id)
         total_expenses_rows = [
-            f"{expense.user_name} – {expense.amount}\n"
+            f"{expense.user_name} – {expense.amount}. Должен {expense.debt}\n"
             for expense in total_expenses
         ]
         answer_message = "Вклад в общие расходы:\n\n" + "".join(total_expenses_rows)
@@ -85,6 +85,7 @@ def telegram_bot(token):
                 return
             answer_message = (
                 f"Добавлены траты от {expense.user_name} на сумму {expense.amount}.\n\n"
+                f"Посмотреть весь список трат – /show_all\n"
                 f"Посмотреть текущие итоги – /total")    
             bot.send_message(message.chat.id, answer_message)
 
