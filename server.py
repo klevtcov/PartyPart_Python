@@ -64,6 +64,8 @@ def telegram_bot(token):
         answer_message = partypart.clear_all(message.chat.id)
         bot.send_message(message.chat.id, answer_message)
 
+# Админ. Просмотр количества уникальных пользователей
+# Админ. Рестарт базы с удалением всех записей
 
 # Добавление и удаление трат – удаление записей по id, парсинг сообщения и сохранение данных в таблицу
     @bot.message_handler()

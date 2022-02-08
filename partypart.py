@@ -80,3 +80,11 @@ def _parse_message(raw_message: str) -> Expense:
     amount = regexp_result.group(1).replace(" ", "")
     user_name = regexp_result.group(2).strip()
     return Message(amount=amount, user_name=user_name)
+
+
+# "Админка"
+def show_uniq_users():
+    pass
+
+def sudo_restart():
+    pass
