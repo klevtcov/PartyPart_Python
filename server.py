@@ -39,10 +39,10 @@ def telegram_bot(token):
     def show_all(message):
         all_expenses = partypart.show_all(message.chat.id)
         all_expenses_rows = [
-            f"{expense.user_name} – {expense.amount}. Для удаления нажми /del{expense.id}\n"
+            f"{expense.user_name} – {expense.amount}.         /del{expense.id}\n"
             for expense in all_expenses
         ]
-        answer_message = "Список расходов:\n\n" + "".join(all_expenses_rows)
+        answer_message = "Список расходов: (/del – удалить запись)\n\n" + "".join(all_expenses_rows)
         bot.send_message(message.chat.id, answer_message)
 
 
@@ -51,7 +51,7 @@ def telegram_bot(token):
     def total_message(message):
         total_expenses = partypart.total(message.chat.id)
         total_expenses_rows = [
-            f"{expense.user_name} – {expense.amount}. Должен {expense.debt}\n"
+            f"{expense.user_name} – {expense.amount}. {' Необходимо внести ' if expense.debt > 0 else ' Нужно получить '} {abs(expense.debt)}\n"
             for expense in total_expenses
         ]
         answer_message = "Вклад в общие расходы:\n\n" + "".join(total_expenses_rows)
