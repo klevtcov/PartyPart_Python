@@ -31,3 +31,4 @@ def check_db_exists():
     base.commit()
 
 check_db_exists()
+
