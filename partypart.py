@@ -5,6 +5,7 @@ from typing import List, NamedTuple, Optional
 import db
 import exceptions
 
+from config import admin_id as admin
 
 class Message(NamedTuple):
     """Структура распаршенного сообщения о новом расходе"""
