@@ -11,7 +11,7 @@ def delete(row_id: int) -> None:
 
 
 def restart(owner):
-    sql.execute(f"delete from expenses where owner=(?)", (owner,))
+    sql.execute(f"delete from expenses where owner_id=(?)", (owner,))
     base.commit()
 
 
@@ -20,15 +20,25 @@ def get_cursor():
 
 
 def check_db_exists():
-    """Проверяет наличие основной таблицы, если её нет - создаёт"""
+    """Проверяет наличие основной таблицы, если её нет - создаёт """
     sql.execute("""CREATE TABLE IF NOT EXISTS expenses (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            owner TEXT,
-            user TEXT,
-            expense INTEGER,
-            comment TEXT,
-            date timestamp)""")
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                owner_id INTEGER,
+                user TEXT,
+                expense INTEGER,
+                comment TEXT,
+                date timestamp)""")
     base.commit()
 
-check_db_exists()
 
+def check_table_exists():
+    """ Проверяем наличие таблицы Юзеров, если не существует - создаём """
+    sql.execute("""CREATE TABLE IF NOT EXISTS owners (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                owner_id INTEGER,
+                owner_name TEXT)""")
+    base.commit()
+
+
+check_db_exists()
+check_table_exists()

@@ -11,6 +11,7 @@ def telegram_bot(token):
 # Выводит приветственное сообщение
     @bot.message_handler(commands=['start', 'help'])
     def start_message(message):
+        partypart.add_user_name(message)
         bot.send_message(message.chat.id, "Добро пожаловать в PartyPart\n\n"
                                           "Вызвать эту справку /help или /start\n"
                                           "Получить подробную справку о работе бота /info\n"
@@ -80,14 +81,13 @@ def telegram_bot(token):
     def say_my_name(message):
         answer_message = message.chat.username
         bot.send_message(message.chat.id, answer_message)
-        
 
 
-# Админ. Рестарт базы с удалением всех записей
+# Админ. Отображения всех уникальных пользователей
     @bot.message_handler(commands=['show_unique_users'])
     def show_unique_users(message):
         if message.chat.id == admin_id:
-            users = partypart.show_unique_users(message.chat.id)
+            users = partypart.show_unique_users()
             users_rows = [
             f"{user}.\n"
             for user in users
