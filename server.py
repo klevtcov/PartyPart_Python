@@ -1,7 +1,7 @@
 import telebot
 import partypart
 import exceptions
-from config import token
+from config import token, admin_id
 
 
 def telegram_bot(token):
@@ -64,8 +64,37 @@ def telegram_bot(token):
         answer_message = partypart.clear_all(message.chat.id)
         bot.send_message(message.chat.id, answer_message)
 
-# Админ. Просмотр количества уникальных пользователей
+
+# Админ. Вывод информации о доступных командах
+    @bot.message_handler(commands=['admin'])
+    def admin_info(message):
+        if message.chat.id == admin_id:
+            bot.send_message(message.chat.id, "Доступны следующие команды: \n\n"
+                                              "Проверить список уникальных пользователей – /show_unique_users\n"
+                                              "Просмотреть список всех записей в базе – /admin_show_all\n"
+                                              "Удалить все записи из базы – /sudo_restart\n"
+                                              "Проверка имени - /say_my_name\n")
+
+# Поиск имени пользователя
+    @bot.message_handler(commands=['say_my_name'])
+    def say_my_name(message):
+        answer_message = message.chat.username
+        bot.send_message(message.chat.id, answer_message)
+        
+
+
 # Админ. Рестарт базы с удалением всех записей
+    @bot.message_handler(commands=['show_unique_users'])
+    def show_unique_users(message):
+        if message.chat.id == admin_id:
+            users = partypart.show_unique_users(message.chat.id)
+            users_rows = [
+            f"{user}.\n"
+            for user in users
+        ]
+        answer_message = "Список уникальных пользователей\n\n" + "".join(users_rows)
+        bot.send_message(message.chat.id, answer_message)
+
 
 # Добавление и удаление трат – удаление записей по id, парсинг сообщения и сохранение данных в таблицу
     @bot.message_handler()
@@ -90,6 +119,7 @@ def telegram_bot(token):
                 f"Посмотреть весь список трат – /show_all\n"
                 f"Посмотреть текущие итоги – /total")    
             bot.send_message(message.chat.id, answer_message)
+
 
 
     bot.polling()

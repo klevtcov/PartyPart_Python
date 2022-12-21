@@ -80,8 +80,11 @@ def _parse_message(raw_message: str) -> Expense:
 
 
 # "Админка"
-def show_uniq_users():
-    pass
+def show_unique_users(owner) -> None:
+    answer = db.sql.execute(f'SELECT DISTINCT owner FROM expenses ORDER BY date')
+    rows = answer.fetchall()
+    users = [row[0] for row in rows]
+    return users
 
 def sudo_restart():
     pass
