@@ -76,6 +76,20 @@ def telegram_bot(token):
                                               "Удалить все записи из базы – /sudo_restart\n"
                                               "Проверка имени - /say_my_name\n")
 
+
+# Админ. Вывод всех записей в базе
+    @bot.message_handler(commands=['admin_show_all'])
+    def admin_show_all(message):
+        if message.chat.id == admin_id:
+            all_expenses = partypart.admin_show_all()
+            all_expenses_rows = [
+                f"{expense.user_name} – {expense.amount}.         /admin_del{expense.id}\n"
+                for expense in all_expenses
+            ]
+            answer_message = "Список расходов: (/admin_del – удалить запись)\n\n" + "".join(all_expenses_rows)
+            bot.send_message(message.chat.id, answer_message)
+
+
 # Поиск имени пользователя
     @bot.message_handler(commands=['say_my_name'])
     def say_my_name(message):
@@ -96,6 +110,18 @@ def telegram_bot(token):
         bot.send_message(message.chat.id, answer_message)
 
 
+# Админ. Перезапуск всей базы
+    @bot.message_handler(commands=['sudo_restart'])
+    def sudo_restart(message):
+        print('бот команду принял')
+        if message.chat.id == admin_id:
+            username = message.chat.username
+            print(f"бот проверил на админа. Косячник - {username}")
+            answer_message = partypart.sudo_restart()
+            print("выполнился запрос к логике")
+            bot.send_message(message.chat.id, answer_message)
+
+
 # Добавление и удаление трат – удаление записей по id, парсинг сообщения и сохранение данных в таблицу
     @bot.message_handler()
     def add_expense(message):
@@ -108,6 +134,15 @@ def telegram_bot(token):
             except Exception as e:
                 bot.send_message(message.chat.id, 'Введите команду в формате /delX, где Х - номер записи о затратах')
                 return
+        elif (message.text.startswith('/admin_del')):
+            if message.chat.id == admin_id:
+                try:
+                    row_id = int(message.text[10:])
+                    answer_message = partypart.admin_delete_expense(row_id)
+                    bot.send_message(message.chat.id, answer_message)
+                except Exception as e:
+                    bot.send_message(message.chat.id, 'Введите команду в формате /admin_delX, где Х - номер записи о затратах')
+                    return
         else:
             try:
                 expense = partypart.add_expense(message.text, message.chat.id)

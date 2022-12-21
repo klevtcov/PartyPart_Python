@@ -41,6 +41,13 @@ def show_all(owner):
     return all_expenses
 
 
+def admin_show_all():
+    answer = db.sql.execute(f'SELECT id, user, expense, date FROM expenses ORDER BY date')
+    rows = answer.fetchall()
+    all_expenses = [Expense(id=row[0], user_name=row[1], amount=row[2], debt=None) for row in rows]
+    return all_expenses
+
+
 def total(owner):
     answer = db.sql.execute(f'SELECT id, user, sum(expense), ((SELECT sum(expense) FROM expenses WHERE owner_id = (?)) / (SELECT count(DISTINCT user) FROM expenses WHERE owner_id = (?))) FROM expenses WHERE owner_id = (?) GROUP BY user', (str(owner), str(owner), str(owner),))
     rows = answer.fetchall()
@@ -69,6 +76,21 @@ def delete_expense(owner, row_id: int) -> None:
             return(f'У вас нет записи с номером {row_id}')
     except Exception as e:
         return(f'У вас нет записи с номером {row_id}')
+
+
+def admin_delete_expense(row_id: int) -> None:
+    """Удаляет сообщение по его идентификатору"""
+    db.delete(row_id)
+    return(f'Запись номер {row_id} удалена')
+
+
+def sudo_restart():
+    """Удаляет ВСЕ данные из таблицы трат"""
+    print(f'запрост пришел в голику от')
+    db.sql.execute('DELETE FROM expenses')
+    print('запрос вернулся с базы данных')
+    return('ВСЕ записи из базы удалены')
+    
 
 
 def _parse_message(raw_message: str) -> Expense:

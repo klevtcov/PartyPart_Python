@@ -15,6 +15,14 @@ def restart(owner):
     base.commit()
 
 
+# def sudo_restart():
+#     print('запрос пришел в бд от ')
+    
+#     sql.execute("delete from expenses")
+#     print('данные с базы удалены')
+#     base.commit()
+
+
 def get_cursor():
     return sql
 
