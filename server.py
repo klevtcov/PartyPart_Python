@@ -96,5 +96,6 @@ def telegram_bot(token):
 
 
 if __name__ == '__main__':
-    telegram_bot(token)
     print('Бот запущен')
+    telegram_bot(token)
+    

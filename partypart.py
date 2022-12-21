@@ -24,23 +24,20 @@ class Expense(NamedTuple):
 
 def add_expense(raw_message: str, owner) -> Expense:
     parsed_message = _parse_message(raw_message)
-    sql = db.get_cursor()
-    sql.execute(f'INSERT INTO expenses (owner, user, expense, date) VALUES(?, ?, ?, ?)', (owner, parsed_message.user_name, parsed_message.amount, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+    db.sql.execute(f'INSERT INTO expenses (owner, user, expense, date) VALUES(?, ?, ?, ?)', (owner, parsed_message.user_name, parsed_message.amount, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
     db.base.commit()    
     return Expense(id=None, amount=parsed_message.amount, user_name=parsed_message.user_name, debt=None)
 
 
 def show_all(owner):
-    sql = db.get_cursor()
-    answer = sql.execute(f'SELECT id, user, expense, date FROM expenses WHERE owner = (?) ORDER BY date', (str(owner),))
+    answer = db.sql.execute(f'SELECT id, user, expense, date FROM expenses WHERE owner = (?) ORDER BY date', (str(owner),))
     rows = answer.fetchall()
     all_expenses = [Expense(id=row[0], user_name=row[1], amount=row[2], debt=None) for row in rows]
     return all_expenses
 
 
 def total(owner):
-    sql = db.get_cursor()
-    answer = sql.execute(f'SELECT id, user, sum(expense), ((SELECT sum(expense) FROM expenses WHERE owner = (?)) / (SELECT count(DISTINCT user) FROM expenses WHERE owner = (?))) FROM expenses WHERE owner = (?) GROUP BY user', (str(owner), str(owner), str(owner),))
+    answer = db.sql.execute(f'SELECT id, user, sum(expense), ((SELECT sum(expense) FROM expenses WHERE owner = (?)) / (SELECT count(DISTINCT user) FROM expenses WHERE owner = (?))) FROM expenses WHERE owner = (?) GROUP BY user', (str(owner), str(owner), str(owner),))
     rows = answer.fetchall()
     total_expenses = [Expense(id=row[0], user_name=row[1], amount=row[2], debt=row[3]-row[2]) for row in rows]
     return total_expenses
@@ -58,8 +55,7 @@ def clear_all(owner):
 def delete_expense(owner, row_id: int) -> None:
     """Удаляет сообщение по его идентификатору"""
     try:
-        sql = db.get_cursor()
-        take_owner = sql.execute(f'SELECT id, owner FROM expenses WHERE id=(?)', (row_id,))
+        take_owner = db.sql.execute(f'SELECT id, owner FROM expenses WHERE id=(?)', (row_id,))
         result = take_owner.fetchone()[1]
         if result == str(owner):
             db.delete(row_id)
@@ -79,7 +75,7 @@ def _parse_message(raw_message: str) -> Expense:
             "Не могу понять сообщение. Напишите сообщение в формате, "
             "например:\n800 Сергей")
     amount = regexp_result.group(1).replace(" ", "")
-    user_name = regexp_result.group(2).strip()
+    user_name = regexp_result.group(2).strip().title()
     return Message(amount=amount, user_name=user_name)
 
 
