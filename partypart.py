@@ -86,9 +86,7 @@ def admin_delete_expense(row_id: int) -> None:
 
 def sudo_restart():
     """Удаляет ВСЕ данные из таблицы трат"""
-    print(f'запрост пришел в голику от')
-    db.sql.execute('DELETE FROM expenses')
-    print('запрос вернулся с базы данных')
+    db.sudo_restart()
     return('ВСЕ записи из базы удалены')
     
 
@@ -113,5 +111,3 @@ def show_unique_users() -> None:
     users = [row[0] for row in rows]
     return users
 
-def sudo_restart():
-    pass

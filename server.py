@@ -113,12 +113,8 @@ def telegram_bot(token):
 # Админ. Перезапуск всей базы
     @bot.message_handler(commands=['sudo_restart'])
     def sudo_restart(message):
-        print('бот команду принял')
         if message.chat.id == admin_id:
-            username = message.chat.username
-            print(f"бот проверил на админа. Косячник - {username}")
             answer_message = partypart.sudo_restart()
-            print("выполнился запрос к логике")
             bot.send_message(message.chat.id, answer_message)
 
 
@@ -154,7 +150,6 @@ def telegram_bot(token):
                 f"Посмотреть весь список трат – /show_all\n"
                 f"Посмотреть текущие итоги – /total")    
             bot.send_message(message.chat.id, answer_message)
-
 
 
     bot.polling()
