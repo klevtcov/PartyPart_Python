@@ -1,11 +1,10 @@
-from datetime import datetime
 import re
-from typing import List, NamedTuple, Optional
+from datetime import datetime
+from typing import NamedTuple, Optional
 
 import db
 import exceptions
 
-from config import admin_id as admin
 
 class Message(NamedTuple):
     """Структура распаршенного сообщения о новом расходе"""
@@ -21,17 +20,16 @@ class Expense(NamedTuple):
     debt: Optional[int]
 
 
-
 def add_expense(raw_message: str, owner) -> Expense:
     parsed_message = _parse_message(raw_message)
     db.sql.execute(f'INSERT INTO expenses (owner_id, user, expense, date) VALUES(?, ?, ?, ?)', (owner, parsed_message.user_name, parsed_message.amount, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
-    db.base.commit()    
+    db.base.commit()
     return Expense(id=None, amount=parsed_message.amount, user_name=parsed_message.user_name, debt=None)
 
 
 def add_user_name(owner):
     db.sql.execute(f'INSERT INTO owners (owner_id, owner_name) VALUES(?, ?)', (owner.chat.id, owner.chat.username))
-    db.base.commit()    
+    db.base.commit()
 
 
 def show_all(owner):
@@ -71,23 +69,23 @@ def delete_expense(owner, row_id: int) -> None:
         result = take_owner.fetchone()[1]
         if result == str(owner):
             db.delete(row_id)
-            return(f'Запись номер {row_id} удалена')
+            return (f'Запись номер {row_id} удалена')
         else:
-            return(f'У вас нет записи с номером {row_id}')
-    except Exception as e:
-        return(f'У вас нет записи с номером {row_id}')
+            return (f'У вас нет записи с номером {row_id}')
+    except Exception:
+        return (f'У вас нет записи с номером {row_id}')
 
 
 def admin_delete_expense(row_id: int) -> None:
     """Удаляет сообщение по его идентификатору"""
     db.delete(row_id)
-    return(f'Запись номер {row_id} удалена')
+    return (f'Запись номер {row_id} удалена')
 
 
 def sudo_restart():
     """Удаляет ВСЕ данные из таблицы трат"""
     db.sudo_restart()
-    return('ВСЕ записи из базы удалены')
+    return ('ВСЕ записи из базы удалены')
     
 
 
@@ -110,4 +108,3 @@ def show_unique_users() -> None:
     rows = answer.fetchall()
     users = [row[0] for row in rows]
     return users
-

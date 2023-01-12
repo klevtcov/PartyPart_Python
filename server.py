@@ -1,7 +1,7 @@
 import telebot
+
 import partypart
-import exceptions
-from config import token, admin_id
+from config import admin_id, token
 
 
 def telegram_bot(token):
@@ -102,10 +102,7 @@ def telegram_bot(token):
     def show_unique_users(message):
         if message.chat.id == admin_id:
             users = partypart.show_unique_users()
-            users_rows = [
-            f"{user}.\n"
-            for user in users
-        ]
+            users_rows = [f"{user}.\n" for user in users]
         answer_message = "Список уникальных пользователей\n\n" + "".join(users_rows)
         bot.send_message(message.chat.id, answer_message)
 
@@ -127,7 +124,7 @@ def telegram_bot(token):
                 row_id = int(message.text[4:])
                 answer_message = partypart.delete_expense(message.chat.id, row_id)
                 bot.send_message(message.chat.id, answer_message)
-            except Exception as e:
+            except Exception:
                 bot.send_message(message.chat.id, 'Введите команду в формате /delX, где Х - номер записи о затратах')
                 return
         elif (message.text.startswith('/admin_del')):
@@ -136,8 +133,9 @@ def telegram_bot(token):
                     row_id = int(message.text[10:])
                     answer_message = partypart.admin_delete_expense(row_id)
                     bot.send_message(message.chat.id, answer_message)
-                except Exception as e:
-                    bot.send_message(message.chat.id, 'Введите команду в формате /admin_delX, где Х - номер записи о затратах')
+                except Exception:
+                    bot.send_message(message.chat.id,
+                                    'Введите команду в формате /admin_delX, где Х - номер записи о затратах')
                     return
         else:
             try:
@@ -148,9 +146,8 @@ def telegram_bot(token):
             answer_message = (
                 f"Добавлены траты от {expense.user_name} на сумму {expense.amount}.\n\n"
                 f"Посмотреть весь список трат – /show_all\n"
-                f"Посмотреть текущие итоги – /total")    
+                f"Посмотреть текущие итоги – /total")
             bot.send_message(message.chat.id, answer_message)
-
 
     bot.polling()
 
@@ -158,4 +155,3 @@ def telegram_bot(token):
 if __name__ == '__main__':
     print('Бот запущен')
     telegram_bot(token)
-    
