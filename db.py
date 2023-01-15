@@ -41,7 +41,8 @@ def check_table_exists():
     sql.execute("""CREATE TABLE IF NOT EXISTS owners (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 owner_id INTEGER,
-                owner_name TEXT)""")
+                owner_name TEXT,
+                date timestamp)""")
     base.commit()
 
 

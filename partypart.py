@@ -28,7 +28,11 @@ def add_expense(raw_message: str, owner) -> Expense:
 
 
 def add_user_name(owner):
-    db.sql.execute(f'INSERT INTO owners (owner_id, owner_name) VALUES(?, ?)', (owner.chat.id, owner.chat.username))
+    ''' создаём запись о пользователе с временем первого входа '''
+    try: 
+        db.sql.execute(f'INSERT INTO owners (owner_id, owner_name, date) VALUES(?, ?, ?)', (owner.chat.id, owner.chat.username, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+    except Exception:
+                return
     db.base.commit()
 
 
