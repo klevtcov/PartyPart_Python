@@ -25,7 +25,7 @@ def telegram_bot(token):
 # Выводит справку о предназначении бота
     @bot.message_handler(commands=['info'])
     def info_message(message):
-        bot.send_message(message.chat.id, "PatryPart – бот для учета расходов на мероприятие.\n\n"
+        bot.send_message(message.chat.id, "PartyPart – бот для учета расходов на мероприятие.\n\n"
                                           "Предположим, вы с друзьями решили устроить вечеринку:\n"
                                           "– Андрей купил вино за 1050 рублей и мандарины за 240\n"
                                           "– Пётр купил сыр за 500 и виноград за 370\n"

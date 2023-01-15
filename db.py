@@ -1,6 +1,6 @@
 import sqlite3
 
-base = sqlite3.connect("patrypart.db", check_same_thread=False)
+base = sqlite3.connect("partypart.db", check_same_thread=False)
 sql = base.cursor()
 
 
